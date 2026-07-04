@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Mahasiswa - Portal Kampus</title>
+    <!-- Mengambil font & ikon -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <style>
+        /* CSS langsung digabung agar mudah dicoba */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        :root {
+            --primary-color: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg-body: #f8fafc;
+            --sidebar-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            width: 260px;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 40px;
+        }
+
+        .menu-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .menu-links a {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 15px;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .menu-links a:hover, .menu-links a.active {
+            background: rgba(79, 70, 229, 0.1);
+            color: var(--primary-color);
+        }
+
+        .logout-btn {
+            color: #ef4444 !important;
+        }
+        .logout-btn:hover {
+            background: rgba(239, 68, 68, 0.1) !important;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        /* Profil Singkat Card */
+        .profile-widget {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 15px;
+            border: 1px solid var(--border-color);
+        }
+
+        .profile-widget img {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .profile-info h4 {
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .profile-info p {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Stats Grid (KRS, KHS, IPK) */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .stat-detail h3 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+
+        .stat-detail p {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .stat-icon {
+            font-size: 35px;
+            color: var(--primary-color);
+            background: rgba(79, 70, 229, 0.1);
+            padding: 12px;
+            border-radius: 12px;
+        }
+
+        /* Table Card (Jadwal / Nilai) */
+        .data-card {
+            background: white;
+            border-radius: 15px;
+            border: 1px solid var(--border-color);
+            padding: 25px;
+        }
+
+        .data-card h3 {
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        table th, table td {
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 14px;
+        }
+
+        table th {
+            background: #f8fafc;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .status-badge.lulus { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR MAHASISWA -->
+    <div class="sidebar">
+        <div>
+            <div class="logo-area">
+                <i class='bx bxs-graduation'></i>
+                <span>SiakadCloud</span>
+            </div>
+            <ul class="menu-links">
+                <li><a href="#" class="active"><i class='bx bxs-dashboard'></i> Dashboard</a></li>
+                <li><a href="#"><i class='bx bx-file'></i> Cek KRS</a></li>
+                <li><a href="#"><i class='bx bx-book-open'></i> Nilai Akademik (KHS)</a></li>
+                <li><a href="#"><i class='bx bx-user'></i> Profil Saya</a></li>
+                <li><a href="#"><i class='bx bx-credit-card'></i> Pembayaran UKT</a></li>
+            </ul>
+        </div>
+        <div>
+            <ul class="menu-links">
+                <li><a href="#" class="logout-btn"><i class='bx bx-log-out'></i> Keluar</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <div class="header-content">
+            <div>
+                <h2>Halo, ANDIKA RAMADHANA👋</h2>
+                <p style="color: var(--text-muted); font-size: 14px;">Selamat datang kembali di portal akademik Anda.</p>
+            </div>
+            <div class="profile-widget">
+                <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=100&auto=format&fit=crop" alt="Foto Profil">
+                <div class="profile-info">
+                    <h4>ANDIKA RAMADHANA</h4>
+                    <p>NIM. 251041020030</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- STATS GRID -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-detail">
+                    <p>IPK Kumulatif</p>
+                    <h3>3.85</h3>
+                </div>
+                <i class='bx bx-trending-up stat-icon'></i>
+            </div>
+            <div class="stat-card">
+                <div class="stat-detail">
+                    <p>SKS Diambil (Smt ini)</p>
+                    <h3>24 <span style="font-size: 14px; color: var(--text-muted);">/ 24</span></h3>
+                </div>
+                <i class='bx bx-book-content stat-icon'></i>
+            </div>
+            <div class="stat-card">
+                <div class="stat-detail">
+                    <p>Status Akademik</p>
+                    <h3 style="color: var(--success); font-size: 22px; margin-top: 12px;">Aktif</h3>
+                </div>
+                <i class='bx bx-check-shield stat-icon' style="color: var(--success); background: rgba(16, 185, 129, 0.1);"></i>
+            </div>
+        </div>
+
+        <!-- DATA CARD (KHS RINGKASAN) -->
+        <div class="data-card">
+            <h3>Ringkasan Nilai Semester Ini</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Kode MK</th>
+                        <th>Mata Kuliah</th>
+                        <th>SKS</th>
+                        <th>Nilai Huruf</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>INF301</td>
+                        <td>Pemrograman Web Lanjut</td>
+                        <td>3</td>
+                        <td><b>A</b></td>
+                        <td><span class="status-badge lulus">Lulus</span></td>
+                    </tr>
+                    <tr>
+                        <td>INF302</td>
+                        <td>Desain UI/UX Efektif</td>
+                        <td>3</td>
+                        <td><b>A</b></td>
+                        <td><span class="status-badge lulus">Lulus</span></td>
+                    </tr>
+                    <tr>
+                        <td>INF303</td>
+                        <td>Basis Data Terdistribusi</td>
+                        <td>4</td>
+                        <td><b>B+</b></td>
+                        <td><span class="status-badge lulus">Lulus</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Informasi Akademik Terpadu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    
+    <style>
+        /* ==========================================
+           1. RESET & BASE STYLES 
+           ========================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        :root {
+            --primary-color: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --bg-body: #f8fafc;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --admin-dark: #0f172a;
+            --admin-sidebar: #1e293b;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            min-height: 100vh;
+        }
+
+        .page { display: none; }
+        .page.active { display: flex; }
+
+        /* ==========================================
+           2. STYLE: LOGIN PAGE
+           ========================================== */
+        #login-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-image: url('bangunan ubudiyah.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: 20px;
+}
+        
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .login-header { text-align: center; margin-bottom: 30px; }
+        .login-header h2 { font-size: 28px; font-weight: 600; color: #1f2937; }
+
+        .input-group { position: relative; margin-bottom: 20px; }
+        .input-group i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 20px; }
+        .input-group input { width: 100%; padding: 14px 15px 14px 50px; background-color: #f3f4f6; border: 2px solid transparent; border-radius: 12px; outline: none; font-size: 15px; transition: all 0.3s ease; }
+        .input-group input:focus { border-color: var(--primary-color); background-color: #fff; box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); }
+
+        .login-btn { width: 100%; padding: 14px; background-color: var(--primary-color); color: #fff; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
+        .login-btn:hover { background-color: var(--primary-hover); }
+        .error-msg { color: var(--danger); font-size: 14px; text-align: center; margin-bottom: 15px; display: none; }
+
+        /* ==========================================
+           3. STYLE: SHARED DASHBOARD & SIDEBAR
+           ========================================== */
+        .sidebar {
+            width: 260px;
+            background: #ffffff;
+            border-right: 1px solid var(--border-color);
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100vh;
+            position: fixed;
+            z-index: 10;
+        }
+
+        .logo-area { display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 600; color: var(--primary-color); margin-bottom: 40px; }
+        .menu-links { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+        .menu-links a { display: flex; align-items: center; gap: 15px; padding: 12px 15px; color: var(--text-muted); text-decoration: none; border-radius: 10px; font-weight: 500; transition: all 0.3s ease; cursor: pointer; }
+        .menu-links a:hover, .menu-links a.active { background: rgba(79, 70, 229, 0.1); color: var(--primary-color); }
+        .logout-btn { color: #ef4444 !important; }
+        .logout-btn:hover { background: rgba(239, 68, 68, 0.1) !important; }
+
+        .main-content { flex: 1; padding: 40px; margin-left: 260px; min-height: 100vh; }
+        .header-content { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+
+        /* ==========================================
+           4. STYLE: MAHASISWA & SUB-MENU CONTENT
+           ========================================== */
+        .profile-widget { display: flex; align-items: center; gap: 15px; background: white; padding: 10px 20px; border-radius: 15px; border: 1px solid var(--border-color); }
+        .profile-widget img { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: white; padding: 25px; border-radius: 15px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; }
+        .stat-detail h3 { font-size: 28px; font-weight: 600; margin-top: 5px; }
+        .stat-icon { font-size: 35px; color: var(--primary-color); background: rgba(79, 70, 229, 0.1); padding: 12px; border-radius: 12px; }
+
+        .data-card { background: white; border-radius: 15px; border: 1px solid var(--border-color); padding: 25px; margin-bottom: 25px; }
+        .sub-section { display: none; }
+        .sub-section.active { display: block; }
+
+        table { width: 100%; border-collapse: collapse; text-align: left; margin-top: 15px; }
+        table th, table td { padding: 15px; border-bottom: 1px solid var(--border-color); font-size: 14px; }
+        table th { background: #f8fafc; color: var(--text-muted); }
+
+        .status-badge { padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+        .status-badge.lulus { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+        .status-badge.proses { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+
+        .action-btn { background: var(--primary-color); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 500; transition: background 0.2s; }
+        .action-btn:hover { background: var(--primary-hover); }
+
+        /* ==========================================
+           5. STYLE: ADMIN PANEL CONTENT
+           ========================================== */
+        #admin-page .sidebar { background: var(--admin-sidebar); }
+        #admin-page .logo-area { color: white; }
+        #admin-page .menu-links a { color: #94a3b8; }
+        #admin-page .menu-links a:hover, #admin-page .menu-links a.active { background: rgba(255, 255, 255, 0.05); color: white; }
+
+        .maintenance-card { background: white; border-radius: 15px; padding: 25px; border: 1px solid #e2e8f0; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
+        .switch { position: relative; display: inline-block; width: 60px; height: 34px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 26px; width: 26px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--danger); }
+        input:checked + .slider:before { transform: translateX(26px); }
+
+        .log-terminal { background: var(--admin-dark); color: #38bdf8; border-radius: 15px; padding: 25px; font-family: 'Courier New', Courier, monospace; box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
+        .log-title { color: #94a3b8; font-family: 'Poppins', sans-serif; margin-bottom: 15px; display: flex; justify-content: space-between; }
+        .log-item { margin-bottom: 8px; font-size: 13px; }
+        .log-time { color: #64748b; margin-right: 10px; }
+        .log-status.info { color: #34d399; font-weight: bold; }
+        .log-status.warning { color: #fbbf24; font-weight: bold; }
+        .log-status.critical { color: #f87171; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div id="login-page" class="page active">
+        <div class="login-container">
+            <div class="login-header">
+                <h2>Portal Kampus</h2>
+                <p style="color: var(--text-muted); font-size: 14px; margin-top: 5px;">Masuk ke akun Anda</p>
+            </div>
+            <div class="error-msg" id="login-error">Email atau Password salah!</div>
+            <form onsubmit="handleLogin(event)">
+                <div class="input-group">
+                    <i class='bx bx-user'></i>
+                    <input type="text" id="usernameInput" placeholder="Email (ANDIKA@kampus.com / admin)" required>
+                </div>
+                <div class="input-group">
+                    <i class='bx bx-lock-alt'></i>
+                    <input type="password" id="passwordInput" placeholder="Password (mahasiswa123 / admin123)" required>
+                </div>
+                <button type="submit" class="login-btn">Masuk Sistem</button>
+            </form>
+        </div>
+    </div>
+
+
+    <div id="mahasiswa-page" class="page">
+        <div class="sidebar">
+            <div>
+                <div class="logo-area"><i class='bx bxs-graduation'></i><span>SiakadStudent</span></div>
+                <ul class="menu-links">
+                    <li><a id="nav-mhs-home" class="active" onclick="switchMhsSection('mhs-home')"><i class='bx bxs-dashboard'></i> Dashboard</a></li>
+                    <li><a id="nav-mhs-krs" onclick="switchMhsSection('mhs-krs')"><i class='bx bx-file'></i> Input KRS</a></li>
+                    <li><a id="nav-mhs-nilai" onclick="switchMhsSection('mhs-nilai')"><i class='bx bx-book-open'></i> Nilai & KHS</a></li>
+                </ul>
+            </div>
+            <div>
+                <ul class="menu-links">
+                    <li><a onclick="logout()" class="logout-btn"><i class='bx bx-log-out'></i> Keluar</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="header-content">
+                <div>
+                    <h2 id="welcome-text">Halo, Budi Setiawan 👋</h2>
+                    <p style="color: var(--text-muted); font-size: 14px;">Portal Akademik Mahasiswa Aktif.</p>
+                </div>
+                <div class="profile-widget">
+                    <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=100&auto=format&fit=crop" alt="Profil">
+                    <div class="profile-info">
+                        <h4>Budi Setiawan</h4>
+                        <p>NIM. 251041020030</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="mhs-home" class="sub-section active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-detail"><p>IPK Kumulatif</p><h3>3.80</h3></div>
+                        <i class='bx bx-trending-up stat-icon'></i>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-detail"><p>SKS Disetujui</p><h3 id="dash-sks">10</h3></div>
+                        <i class='bx bx-book-content stat-icon'></i>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-detail"><p>Status Semester</p><h3 style="color: var(--success); font-size: 22px; margin-top: 12px;">Aktif</h3></div>
+                        <i class='bx bx-check-shield stat-icon' style="color: var(--success); background: rgba(16, 185, 129, 0.1);"></i>
+                    </div>
+                </div>
+                <div class="data-card">
+                    <h3>Pengumuman Kampus</h3>
+                    <p style="font-size: 14px; color: var(--text-muted); margin-top: 10px; line-height: 1.6;">
+                        Pengisian KRS untuk Semester Ganjil dibuka sampai akhir minggu ini. Pastikan Anda telah menyelesaikan pembayaran UKT sebelum mengisi KRS. Jika ada kendala, hubungi bagian administrasi IT.
+                    </p>
+                </div>
+            </div>
+
+            <div id="mhs-krs" class="sub-section">
+                <div class="data-card">
+                    <h3>Form Pemilihan KRS (Semester Ganjil)</h3>
+                    <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 15px;">Centang mata kuliah yang ingin Anda ambil semester ini.</p>
+                    <table>
+                        <thead>
+                            <tr><th>Pilih</th><th>Kode</th><th>Mata Kuliah</th><th>SKS</th><th>Dosen Pengampu</th></tr>
+                        </thead>
+                        <tbody id="krs-table-body">
+                            </tbody>
+                    </table>
+                    <div style="margin-top: 20px; text-align: right;">
+                        <button class="action-btn" onclick="simpanKRS()"><i class='bx bx-save'></i> Simpan & Ajukan KRS</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="mhs-nilai" class="sub-section">
+                <div class="data-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3>Kartu Hasil Studi (KHS) Kumulatif</h3>
+                        <span style="font-weight: 600; background: #e0e7ff; color: var(--primary-color); padding: 5px 15px; border-radius: 8px;">IPK: 3.80</span>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr><th>Kode</th><th>Mata Kuliah</th><th>SKS</th><th>Nilai Huruf</th><th>Bobot</th><th>Status</th></tr>
+                        </thead>
+                        <tbody id="nilai-table-body">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <div id="admin-page" class="page">
+        <div class="sidebar">
+            <div>
+                <div class="logo-area"><i class='bx bx-shield-quarter' style="color: #3b82f6;"></i><span>AdminPanel</span></div>
+                <ul class="menu-links">
+                    <li><a class="active"><i class='bx bx-terminal'></i> System Logs & Maintenance</a></li>
+                </ul>
+            </div>
+            <div>
+                <ul class="menu-links">
+                    <li><a onclick="logout()" class="logout-btn"><i class='bx bx-log-out'></i> Keluar</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="top-nav" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
+                <h2>Sistem Kontrol & Log Aplikasi</h2>
+                <span id="server-status" style="background: white; padding: 8px 15px; border-radius: 8px; font-size: 14px; font-weight: 500; border: 1px solid #e2e8f0;">
+                    <i class='bx bx-server' style="color: var(--success); margin-right: 5px;"></i> Server Status: Healthy
+                </span>
+            </div>
+
+            <div class="maintenance-card">
+                <div>
+                    <h3 style="font-size: 18px; margin-bottom: 5px;">Mode Perbaikan (Maintenance Mode)</h3>
+                    <p style="color: #64748b; font-size: 14px;">Aktifkan untuk mengunci akses masuk portal mahasiswa.</p>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="maintenanceToggle" onchange="toggleMaintenance()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="log-terminal">
+                <div class="log-title">
+                    <span><i class='bx bx-code-block'></i> Live Activity Logs</span>
+                    <span style="font-size: 12px; background: rgba(255,255,255,0.1); padding: 3px 8px; border-radius: 5px;">Real-time</span>
+                </div>
+                <div id="logContainer">
+                    <div class="log-item"><span class="log-time">[15:34:12]</span><span class="log-status info">[INFO]</span> Intialisasi database core selesai.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        let isMaintenance = false;
+
+        // DATA SOURCE NYATA UNTUK KRS & NILAI
+        const daftarMataKuliahKRS = [
+            { id: "mk1", kode: "INF301", nama: "Pemrograman Web Lanjut", sks: 3, dosen: "Rendra, M.Kom", diambil: true },
+            { id: "mk2", kode: "INF302", nama: "Desain UI/UX Efektif", sks: 3, dosen: "Siti Rahma, M.Sc", diambil: true },
+            { id: "mk3", kode: "INF303", nama: "Basis Data Terdistribusi", sks: 4, dosen: "Budi Utomo, Ph.D", diambil: true },
+            { id: "mk4", kode: "INF304", nama: "Kecerdasan Buatan (AI)", sks: 3, dosen: "Prof. Dr. Irwan", diambil: false },
+            { id: "mk5", kode: "INF305", nama: "Keamanan Jaringan Cyber", sks: 3, dosen: "Asrul Aziz, M.T", diambil: false }
+        ];
+
+        const riwayatNilaiKHS = [
+            { kode: "INF101", nama: "Dasar Pemrograman", sks: 3, nilai: "A", bobot: "4.00" },
+            { kode: "INF102", nama: "Matematika Diskrit", sks: 3, nilai: "A-", bobot: "3.75" },
+            { kode: "INF201", nama: "Struktur Data & Algoritma", sks: 4, nilai: "B+", bobot: "3.50" },
+            { kode: "INF202", nama: "Arsitektur Komputer", sks: 3, nilai: "A", bobot: "4.00" }
+        ];
+
+        // RENDER DATA PERTAMA KALI
+        function initData() {
+            renderKRS();
+            renderNilai();
+            updateDashboardSKS();
+        }
+
+        // RENDER HALAMAN INPUT KRS
+        function renderKRS() {
+            const tbody = document.getElementById('krs-table-body');
+            tbody.innerHTML = '';
+            daftarMataKuliahKRS.forEach(mk => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><input type="checkbox" id="${mk.id}" ${mk.diambil ? 'checked' : ''} style="transform:scale(1.2); accent-color:var(--primary-color);"></td>
+                        <td>${mk.kode}</td>
+                        <td><strong>${mk.nama}</strong></td>
+                        <td>${mk.sks} SKS</td>
+                        <td>${mk.dosen}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        // RENDER HALAMAN NILAI AKADEMIK
+        function renderNilai() {
+            const tbody = document.getElementById('nilai-table-body');
+            tbody.innerHTML = '';
+            riwayatNilaiKHS.forEach(n => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${n.kode}</td>
+                        <td>${n.nama}</td>
+                        <td>${n.sks}</td>
+                        <td><mark style="background:none; font-weight:600; color:var(--primary-color);">${n.nilai}</mark></td>
+                        <td>${n.bobot}</td>
+                        <td><span class="status-badge lulus">Lulus</span></td>
+                    </tr>
+                `;
+            });
+        }
+
+        // AKSI SIMPAN KRS (DINAMIS SINKRON KE DASHBOARD)
+        function simpanKRS() {
+            let totalSKS = 0;
+            daftarMataKuliahKRS.forEach(mk => {
+                const checkBox = document.getElementById(mk.id);
+                mk.diambil = checkBox.checked;
+                if (mk.diambil) totalSKS += mk.sks;
+            });
+
+            updateDashboardSKS();
+            alert(`KRS Berhasil diajukan! Total SKS semester ini: ${totalSKS} SKS.`);
+            addLog('INFO', `User Budi Setiawan memperbarui & mengajukan KRS baru sebesar ${totalSKS} SKS.`);
+            switchMhsSection('mhs-home');
+        }
+
+        function updateDashboardSKS() {
+            let total = 0;
+            daftarMataKuliahKRS.forEach(mk => { if(mk.diambil) total += mk.sks; });
+            document.getElementById('dash-sks').innerText = total;
+        }
+
+        /* ==========================================
+           CORE NAVIGATION CONTROL
+           ========================================== */
+        function handleLogin(event) {
+            event.preventDefault();
+            const user = document.getElementById('usernameInput').value;
+            const pass = document.getElementById('passwordInput').value;
+            const errorMsg = document.getElementById('login-error');
+            errorMsg.style.display = 'none';
+
+            if (user === 'ANDIKA@kampus.com' && pass === 'mahasiswa123') {
+                if (isMaintenance) {
+                    alert('Sistem sedang Pemeliharaan! Mahasiswa dilarang masuk sementara waktu.');
+                    addLog('WARN', 'User ANDIKA diblokir masuk karena mode maintenance aktif.');
+                    return;
+                }
+                switchPage('mahasiswa-page');
+                initData();
+                addLog('INFO', 'User ANDIKA RAMADHANA(Mahasiswa) berhasil masuk.');
+            } else if (user === 'admin' && pass === 'admin123') {
+                switchPage('admin-page');
+                addLog('INFO', 'Administrator masuk ke panel kendali utama.');
+            } else {
+                errorMsg.style.display = 'block';
+                addLog('CRITICAL', `Percobaan login ilegal gagal pada username "${user}".`);
+            }
+        }
+
+        function switchPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+        }
+
+        function switchMhsSection(sectionId) {
+            document.querySelectorAll('.sub-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.sidebar .menu-links a').forEach(a => a.classList.remove('active'));
+            
+            document.getElementById(sectionId).classList.add('active');
+            
+            if(sectionId === 'mhs-home') document.getElementById('nav-mhs-home').classList.add('active');
+            if(sectionId === 'mhs-krs') { document.getElementById('nav-mhs-krs').classList.add('active'); renderKRS(); }
+            if(sectionId === 'mhs-nilai') document.getElementById('nav-mhs-nilai').classList.add('active');
+        }
+
+        function logout() {
+            document.getElementById('usernameInput').value = '';
+            document.getElementById('passwordInput').value = '';
+            switchPage('login-page');
+        }
+
+        function toggleMaintenance() {
+            const checkbox = document.getElementById('maintenanceToggle');
+            const statusLabel = document.getElementById('server-status');
+            isMaintenance = checkbox.checked;
+
+            if (isMaintenance) {
+                statusLabel.innerHTML = "<i class='bx bx-server' style='color: var(--danger); margin-right: 5px;'></i> Server Status: Maintenance Mode";
+                addLog('CRITICAL', 'Sistem dikunci! Mode Maintenance diaktifkan oleh admin.');
+            } else {
+                statusLabel.innerHTML = "<i class='bx bx-server' style='color: var(--success); margin-right: 5px;'></i> Server Status: Healthy";
+                addLog('INFO', 'Sistem dibuka kembali. Mode Maintenance dinonaktifkan.');
+            }
+        }
+
+        function addLog(status, message) {
+            const container = document.getElementById('logContainer');
+            if(!container) return;
+            const now = new Date();
+            const timeStr = `[${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}]`;
+            
+            let statusClass = 'info';
+            if (status === 'WARN') statusClass = 'warning';
+            if (status === 'CRITICAL') statusClass = 'critical';
+
+            const newLog = document.createElement('div');
+            newLog.className = 'log-item';
+            newLog.innerHTML = `<span class="log-time">${timeStr}</span><span class="log-status ${statusClass}">[${status}]</span> ${message}`;
+            container.appendChild(newLog);
+        }
+    </script>
+</body>
+</html>    

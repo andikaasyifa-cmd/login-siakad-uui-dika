@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIAKAD - Universitas Ubudiyah Indonesia</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    
+    <style>
+        /* ==========================================
+           1. RESET & BASE STYLES 
+           ========================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        :root {
+            --siakad-blue: #0f172a; 
+            --siakad-accent: #0284c7; 
+            --primary-hover: #0369a1;
+            --bg-body: #f1f5f9;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --sidebar-width: 260px;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        /* Utility classes for page routing */
+        .page {
+            display: none !important;
+            min-height: 100vh;
+            width: 100%;
+        }
+
+        .page.active {
+            display: block !important;
+        }
+        
+        #login-page.page.active {
+            display: flex !important;
+        }
+        /* ==========================================
+           2. SIAKAD LOGIN STYLES 
+           ========================================== */
+        .siakad-btn:hover {
+            background-color: #08336e !important;
+        }
+
+        .siakad-input-wrapper i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 18px;
+        }
+
+        /* ==========================================
+           3. DASHBOARD GENERAL LAYOUT 
+           ========================================== */
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+            width: 100%;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--siakad-blue);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .sidebar-header img {
+            width: 40px;
+            height: auto;
+        }
+
+        .sidebar-brand h1 {
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar-brand p {
+            font-size: 11px;
+            color: #94a3b8;
+        }
+
+        .sidebar-menu {
+            flex: 1;
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .menu-links a {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 16px;
+            color: #94a3b8;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .menu-links a:hover, .menu-links a.active {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .menu-links a.active {
+            background-color: var(--siakad-accent);
+        }
+
+        .menu-links a i {
+            font-size: 20px;
+        }
+
+        .sidebar-footer {
+            padding: 16px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .btn-logout {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(239, 68, 68, 0.1);
+            color: #f87171;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .btn-logout:hover {
+            background: #ef4444;
+            color: white;
+        }
+
+        /* Main Content Styling */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 32px;
+            min-height: 100vh;
+        }
+
+        .top-navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            background: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .page-title h2 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .user-profile-top {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-info-text {
+            text-align: right;
+        }
+
+        .user-info-text .name {
+            font-size: 14px;
+            font-weight: 600;
+            display: block;
+        }
+
+        .user-info-text .role {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .avatar-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--siakad-accent);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        /* ==========================================
+           4. MAHASISWA DASHBOARD STYLES 
+           ========================================== */
+        .welcome-banner {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: white;
+            padding: 32px;
+            border-radius: 16px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+
+        .welcome-banner h3 {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .welcome-banner p {
+            color: #94a3b8;
+            font-size: 14px;
+            max-width: 600px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-details span {
+            font-size: 13px;
+            color: var(--text-muted);
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .stat-details h3 {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .stat-icon.blue { background: rgba(2, 132, 199, 0.1); color: var(--siakad-accent); }
+        .stat-icon.green { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+        .stat-icon.orange { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+        }
+
+        .data-card {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid var(--border-color);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .card-header h4 {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        /* Table Design */
+        .siakad-table-wrapper {
+            overflow-x: auto;
+        }
+
+        .siakad-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        .siakad-table th {
+            background-color: #f8fafc;
+            padding: 12px 16px;
+            font-weight: 600;
+            color: var(--text-muted);
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .siakad-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .badge.success { background: #d1fae5; color: #065f46; }
+        .badge.info { background: #e0f2fe; color: #0369a1; }
+
+        /* Timeline Info */
+        .info-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 12px;
+        }
+
+        .tl-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .tl-content h5 {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .tl-content p {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 2px;
+        }
+
+        .tl-content span {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        /* ==========================================
+           5. ADMIN DASHBOARD STYLES 
+           ========================================== */
+        .sub-section {
+            display: none;
+        }
+
+        .sub-section.active {
+            display: block;
+        }
+
+        .admin-control-box {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid var(--border-color);
+            margin-bottom: 24px;
+        }
+
+        /* Toggle Switch */
+        .switch-container {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+
+        .switch input { 
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #cbd5e1;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--danger);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+
+        /* System Logs Container */
+        .log-terminal {
+            background-color: #0f172a;
+            color: #38bdf8;
+            font-family: 'Courier New', Courier, monospace;
+            padding: 20px;
+            border-radius: 8px;
+            height: 350px;
+            overflow-y: auto;
+            font-size: 13px;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.5);
+        }
+
+        .log-item {
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .log-time { color: #64748b; margin-right: 8px; }
+        .log-status.info { color: #34d399; }
+        .log-status.warning { color: #fbbf24; }
+        .log-status.critical { color: #f87171; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div id="login-page" class="page active" style="background-image: url('bangunan ubudiyah1.jpg'); background-size: cover; background-position: center; min-height: 100vh; display: flex; align-items: center; justify-content: center; width: 100%;">
+        
+        <div class="siakad-login-wrapper" style="position: relative; z-index: 10000; width: 100%; max-width: 420px; background: rgba(255, 255, 255, 0.95); padding: 35px; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); box-sizing: border-box; margin: 20px;">
+            
+            <div style="text-align: center; margin-bottom: 25px; width: 100%;">
+                <img src="logo uui yang telah di edit.png" alt="Logo UUI" style="width: 80px; height: auto; margin-bottom: 15px; display: block; margin-left: auto; margin-right: auto;">
+                <span style="font-weight: bold; font-size: 22px; color: #464343; display: block; margin-bottom: 10px;">Siakad UUI</span>
+                <h2 style="margin: 0; font-size: 16px; color: #070606; font-weight: bold; line-height: 1.4;">UNIVERSITAS UBUDIYAH INDONESIA</h2>
+                <p style="margin: 5px 0 0 0; font-size: 12px; color: #0f0f0f; line-height: 1.4;">Sistem Informasi Akademik Terpadu (SIAKAD)</p>
+            </div>
+
+            <div class="siakad-login-body">
+                <form onsubmit="handleLogin(event)">
+                    <label class="siakad-label" style="display: block; font-size: 14px; font-weight: 500; margin-bottom: 8px; color: #334155;">NIM / Username</label>
+                    <div class="siakad-input-wrapper" style="position: relative; margin-bottom: 20px;">
+                        <i class='bx bx-user-circle'></i>
+                        <input type="text" id="usernameInput" placeholder="Masukkan NIM (ANDIKA@kampus.com) atau admin" required style="width: 100%; padding: 12px 12px 12px 40px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; outline: none;">
+                    </div>
+
+                    <label class="siakad-label" style="display: block; font-size: 14px; font-weight: 500; margin-bottom: 8px; color: #334155;">Password Sistem</label>
+                    <div class="siakad-input-wrapper" style="position: relative; margin-bottom: 15px;">
+                        <i class='bx bx-lock-open-alt'></i>
+                        <input type="password" id="passwordInput" placeholder="Masukkan Password Anda" required style="width: 100%; padding: 12px 12px 12px 40px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; outline: none;">
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; font-size: 13px;">
+                        <label style="display: flex; align-items: center; gap: 6px; color: #64748b; cursor: pointer;">
+                            <input type="checkbox" style="accent-color: #0b438c;"> Ingat Sesi Saya
+                        </label>
+                        <a href="#" style="color: #0b438c; text-decoration: none; font-weight: 500;">Bantuan Login?</a>
+                    </div>
+
+                    <button type="submit" class="siakad-btn" style="width: 100%; padding: 12px; background-color: #0b438c; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; transition: background 0.2s;">
+                        <i class='bx bx-log-in-circle'></i> Masuk Portal
+                    </button>
+                </form>
+
+                <div class="siakad-footer-notice" style="background-color: #f0fdf4; padding: 15px; border-radius: 6px; border: 1px solid #bbf7d0; margin-top: 20px; box-sizing: border-box;">
+                    <p style="margin: 0; font-size: 12px; color: #16a34a; line-height: 1.5; text-align: left;">
+                        <strong>Pemberitahuan Keamanan:</strong> Gunakan akun SIAKAD resmi yang diberikan Fakultas. Jangan membagikan password Anda kepada siapa pun demi keamanan data akademik Universitas Ubudiyah Indonesia.
+                    </p>
+                </div>
+            </div> </div> </div> <div id="mahasiswa-page" class="page">
+        <div class="dashboard-container">
+            <aside class="sidebar">
+                <div class="sidebar-header">
+                    <img src="logo uui yang telah di edit.png" alt="Logo">
+                    <div class="sidebar-brand">
+                        <h1>SIAKAD UUI</h1>
+                        <p>Portal Mahasiswa</p>
+                    </div>
+                </div>
+                <nav class="sidebar-menu menu-links">
+                    <a href="#" class="active"><i class='bx bx-grid-alt'></i> Dashboard Overview</a>
+                    <a href="#"><i class='bx bx-book-open'></i> Kartu Rencana Studi (KRS)</a>
+                    <a href="#"><i class='bx bx-file'></i> Hasil Studi KHS</a>
+                    <a href="#"><i class='bx bx-money'></i> Keuangan & UKT</a>
+                    <a href="#"><i class='bx bx-user'></i> Profil Akademik</a>
+                </nav>
+                <div class="sidebar-footer">
+                    <button class="btn-logout" onclick="logoutSystem()"><i class='bx bx-log-out'></i> Keluar Portal</button>
+                </div>
+            </aside>
+
+            <main class="main-content">
+                <div class="top-navbar">
+                    <div class="page-title">
+                        <h2>Dashboard Overview</h2>
+                    </div>
+                    <div class="user-profile-top">
+                        <div class="user-info-text">
+                            <span class="name">ANDIKA RAMADHANA</span>
+                            <span class="role">NIM: 2201010344</span>
+                        </div>
+                        <div class="avatar-circle">AR</div>
+                    </div>
+                </div>
+
+                <div class="welcome-banner">
+                    <h3>Halo, ANDIKA RAMADHANA!</h3>
+                    <p>Selamat datang di Sistem Informasi Akademik Terpadu Universitas Ubudiyah Indonesia. Selalu pantau berkas akademik, jadwal perkuliahan, dan administrasi UKT Anda secara berkala.</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-details">
+                            <span>Indeks Prestasi Kumulatif (IPK)</span>
+                            <h3>3.75</h3>
+                        </div>
+                        <div class="stat-icon blue"><i class='bx bx-trophy'></i></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-details">
+                            <span>Total SKS Diambil</span>
+                            <h3 id="dash-sks">0</h3>
+                        </div>
+                        <div class="stat-icon green"><i class='bx bx-book'></i></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-details">
+                            <span>Status Semester</span>
+                            <h3>Aktif (Smt 4)</h3>
+                        </div>
+                        <div class="stat-icon orange"><i class='bx bx-user-check'></i></div>
+                    </div>
+                </div>
+
+                <div class="content-grid">
+                    <div class="data-card">
+                        <div class="card-header">
+                            <h4>KRS Semester Berjalan (SIAKAD Aktif)</h4>
+                            <span class="badge success">Disetujui Dosen Wali</span>
+                        </div>
+                        <div class="siakad-table-wrapper">
+                            <table class="siakad-table">
+                               <thead>
+                                   <tr>
+                                       <th>Kode</th>
+                                       <th>Mata Kuliah</th>
+                                       <th>SKS</th>
+                                       <th>Dosen Pengampu</th>
+                                   </tr>
+                               </thead>
+                               <tbody id="krs-table-body">
+                                   </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="data-card">
+                        <div class="card-header">
+                            <h4>Pengumuman Kampus</h4>
+                        </div>
+                        <div class="info-timeline">
+                            <div class="timeline-item">
+                                <div class="tl-icon"><i class='bx bx-notification' style='color: var(--siakad-accent);'></i></div>
+                                <div class="tl-content">
+                                    <h5>Pengisian KRS Genap 2026</h5>
+                                    <p>Batas akhir pengisian KRS dan pembayaran UKT diperpanjang hingga akhir minggu ini.</p>
+                                    <span>02 Juli 2026</span>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="tl-icon"><i class='bx bx-info-circle' style='color: var(--warning);'></i></div>
+                                <div class="tl-content">
+                                    <h5>UAS Praktikum Imk</h5>
+                                    <p>Jangan lupa mengunggah file project rancangan aplikasi SIAKAD Anda ke repositori.</p>
+                                    <span>28 Juni 2026</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+
+    <div id="admin-page" class="page">
+        <div class="dashboard-container">
+            <aside class="sidebar" style="background-color: #1e293b;">
+                <div class="sidebar-header" style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                    <img src="logo uui yang telah di edit.png" alt="Logo">
+                    <div class="sidebar-brand">
+                        <h1>SIAKAD ADMIN</h1>
+                        <p>Kontrol Sistem Utama</p>
+                    </div>
+                </div>
+                <nav class="sidebar-menu menu-links">
+                    <a href="#" id="nav-admin-logs" class="active" onclick="switchAdminSection('admin-logs')"><i class='bx bx-terminal'></i> Log Sistem & Kontrol</a>
+                    <a href="#" id="nav-admin-mhs" onclick="switchAdminSection('admin-mhs')"><i class='bx bx-user-pin'></i> Manajemen Mahasiswa</a>
+                </nav>
+                <div class="sidebar-footer">
+                    <button class="btn-logout" onclick="logoutSystem()"><i class='bx bx-log-out'></i> Keluar Admin</button>
+                </div>
+            </aside>
+
+            <main class="main-content">
+                <div class="top-navbar">
+                    <div class="page-title">
+                        <h2>Sistem Kontrol & Log Aplikasi</h2>
+                    </div>
+                    <div class="user-profile-top">
+                        <div class="user-info-text">
+                            <span class="name">Administrator Utama</span>
+                            <span class="role" id="server-status"><i class='bx bx-server' style='color: var(--success);'></i> Server Status: Healthy</span>
+                        </div>
+                        <div class="avatar-circle" style="background-color: var(--danger);">AD</div>
+                    </div>
+                </div>
+
+                <section id="admin-logs" class="sub-section active">
+                    <div class="admin-control-box">
+                        <div class="switch-container">
+                            <label class="switch">
+                                <input type="checkbox" id="maintenanceToggle" onchange="toggleMaintenance()">
+                                <span class="slider"></span>
+                            </label>
+                            <div>
+                                <h4 style="font-size: 15px; font-weight: 600;">Aktifkan Mode Perbaikan Sistem (Maintenance Mode)</h4>
+                                <p style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Jika aktif, seluruh akun Mahasiswa biasa akan terisolasi dan ditolak masuk dengan pesan pemberitahuan sistem sedang dalam perbaikan.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+                        <div class="stat-card">
+                            <div class="stat-details"><span>Total Log Hari Ini</span><h3>1,248</h3></div>
+                            <div class="stat-icon blue"><i class='bx bx-list-check'></i></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-details"><span>Uptime Server</span><h3>99.9%</h3></div>
+                            <div class="stat-icon green"><i class='bx bx-pulse'></i></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-details"><span>Error Terdeteksi</span><h3>12</h3></div>
+                            <div class="stat-icon style" style="background: rgba(239, 68, 68, 0.1); color: var(--danger);"><i class='bx bx-bug-alt'></i></div>
+                        </div>
+                    </div>
+
+                    <div class="data-card">
+                        <div class="card-header">
+                            <h4>Riwayat Log Sistem</h4>
+                            <div style="display: flex; gap: 10px;">
+                                <button style="padding: 6px 12px; font-size:12px; font-weight:500; cursor:pointer; background:#f1f5f9; border:1px solid #cbd5e1; border-radius:6px;"><i class='bx bx-refresh'></i> Refresh</button>
+                                <button style="padding: 6px 12px; font-size:12px; font-weight:500; cursor:pointer; background:#1e293b; color:white; border:none; border-radius:6px;"><i class='bx bx-download' ></i> Download Log (.csv)</button>
+                            </div>
+                        </div>
+                        <div class="log-terminal" id="logContainer">
+                            </div>
+                    </div>
+                </section>
+
+                <section id="admin-mhs" class="sub-section">
+                    <div class="data-card">
+                        <div class="card-header">
+                            <h4>Daftar Mahasiswa Terdaftar di SIAKAD</h4>
+                        </div>
+                        <div class="siakad-table-wrapper">
+                            <table class="siakad-table">
+                                <thead>
+                                    <tr>
+                                        <th>NIM</th>
+                                        <th>Nama Lengkap</th>
+                                        <th>Program Studi</th>
+                                        <th>SKS Genap</th>
+                                        <th>Aksi Kontrol</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>2201010344</td>
+                                        <td><strong>ANDIKA RAMADHANA</strong></td>
+                                        <td>S1 Informatika</td>
+                                        <td>15 SKS</td>
+                                        <td><button style="padding: 4px 8px; font-size:12px; color:white; background:var(--siakad-accent); border:none; border-radius:4px; cursor:pointer;">Edit Data</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        let isMaintenance = false;
+
+        const daftarMataKuliahKRS = [
+            { id: "mk1", kode: "INF301", nama: "Pemrograman Web Lanjut", sks: 3, dosen: "Rendra, M.Kom", diambil: true },
+            { id: "mk2", kode: "INF302", nama: "Desain UI/UX Efektif", sks: 3, dosen: "Siti Rahma, M.Sc", diambil: true },
+            { id: "mk3", kode: "INF303", nama: "Basis Data Terdistribusi", sks: 4, dosen: "Budi Utomo, Ph.D", diambil: true },
+            { id: "mk4", kode: "INF304", nama: "Kecerdasan Buatan (AI)", sks: 3, dosen: "Prof. Dr. Irwan", diambil: true },
+            { id: "mk5", kode: "INF305", nama: "Keamanan Jaringan Cyber", sks: 3, dosen: "Asrul Aziz, M.T", diambil: true },
+        ];
+
+        const riwayatNilaiKHS = [
+            { kode: "INF101", nama: "Dasar Pemrograman", sks: 3, nilai: "A", bobot: "4.00" },
+            { kode: "INF102", nama: "Matematika Diskrit", sks: 3, nilai: "A-", bobot: "3.75" },
+            { kode: "INF201", nama: "Struktur Data & Algoritma", sks: 4, nilai: "B+", bobot: "3.50" },
+            { kode: "INF202", nama: "Arsitektur Komputer", sks: 3, nilai: "A", bobot: "4.00" }
+        ];
+
+        function initData() {
+            renderKRS();
+            updateDashboardSKS();
+        }
+
+        function renderKRS() {
+            const tableBody = document.getElementById('krs-table-body');
+            if(!tableBody) return;
+            tableBody.innerHTML = '';
+            
+            daftarMataKuliahKRS.forEach(mk => {
+                if(mk.diambil) {
+                    const row = `<tr>
+                        <td>${mk.kode}</td>
+                        <td><strong>${mk.nama}</strong></td>
+                        <td>${mk.sks} SKS</td>
+                        <td>${mk.dosen}</td>
+                    </tr>`;
+                    tableBody.innerHTML += row;
+                }
+            });
+        }
+
+        function updateDashboardSKS() {
+            let total = 0;
+            daftarMataKuliahKRS.forEach(mk => { if(mk.diambil) total += mk.sks; });
+            document.getElementById('dash-sks').innerText = total;
+        }
+
+        function switchAdminSection(sectionId) {
+            document.querySelectorAll('#admin-page .sub-section').forEach(s => {
+                s.style.display = 'none';
+            });
+            document.querySelectorAll('#admin-page .sidebar .menu-links a').forEach(a => {
+                a.classList.remove('active');
+            });
+
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.style.display = 'block';
+            }
+            if(sectionId === 'admin-logs') {
+                document.getElementById('nav-admin-logs').classList.add('active');
+            } else if (sectionId === 'admin-mhs') {
+                document.getElementById('nav-admin-mhs').classList.add('active');
+            }
+        }
+
+        function handleLogin(event) {
+            event.preventDefault(); 
+            
+            const user = document.getElementById('usernameInput').value.trim();
+
+            if (user === 'admin') {
+                switchPage('admin-page');
+                addLog('INFO', 'Admin Panel dibuka.');
+            } else {
+                if (isMaintenance) {
+                    alert('Sistem sedang Pemeliharaan! Akses mahasiswa ditutup sementara.');
+                    return;
+                }
+                switchPage('mahasiswa-page');
+                initData();
+                addLog('INFO', `User ${user} berhasil login.`);
+            }
+        }
+
+        function switchPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            const target = document.getElementById(pageId);
+            if(target) target.classList.add('active');
+        }
+
+        function logoutSystem() {
+            switchPage('login-page');
+            document.getElementById('usernameInput').value = '';
+            document.getElementById('passwordInput').value = '';
+            addLog('INFO', 'User melakukan logout dari sistem.');
+        }
+
+        function toggleMaintenance() {
+            const checkbox = document.getElementById('maintenanceToggle');
+            const statusLabel = document.getElementById('server-status');
+            isMaintenance = checkbox.checked;
+
+            if (isMaintenance) {
+                statusLabel.innerHTML = "<i class='bx bx-server' style='color: var(--danger); margin-right: 5px;'></i> Server Status: Maintenance Mode";
+                addLog('CRITICAL', 'Mode Maintenance diaktifkan oleh admin.');
+            } else {
+                statusLabel.innerHTML = "<i class='bx bx-server' style='color: var(--success); margin-right: 5px;'></i> Server Status: Healthy";
+                addLog('INFO', 'Mode Maintenance dinonaktifkan.');
+            }
+        }
+
+        function addLog(status, message) {
+            const container = document.getElementById('logContainer');
+            if(!container) return;
+            const now = new Date();
+            const timeStr = `[${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}]`;
+            let statusClass = 'info';
+            if (status === 'WARN') statusClass = 'warning';
+            if (status === 'CRITICAL') statusClass = 'critical';
+
+            const newLog = document.createElement('div');
+            newLog.className = 'log-item';
+            newLog.innerHTML = `<span class=\"log-time\">${timeStr}</span><span class=\"log-status ${statusClass}\">[${status}]</span> ${message}`;
+            container.appendChild(newLog);
+        }
+
+        // Jalankan log awal bawaan admin
+        window.onload = function() {
+            addLog('INFO', 'Sistem SIAKAD Universitas Ubudiyah Indonesia berhasil dimuat.');
+            addLog('INFO', 'Menunggu koneksi dari pengguna...');
+        };
+    </script>
+</body>
+</html>

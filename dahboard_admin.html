@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head
+  charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login SIAKAD Ubudiyah</title>
+</head>
+</head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Maintenance & Logs</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        :root {
+            --admin-dark: #0f172a;
+            --admin-sidebar: #1e293b;
+            --bg-body: #f1f5f9;
+            --primary: #3b82f6;
+            --danger: #ef4444;
+            --success: #10b981;
+            --text-light: #f8fafc;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: #334155;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Admin */
+        .sidebar {
+            width: 260px;
+            background: var(--admin-sidebar);
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-light);
+            margin-bottom: 40px;
+        }
+
+        .menu-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .menu-links a {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 15px;
+            color: #94a3b8;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .menu-links a:hover, .menu-links a.active {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-light);
+        }
+
+        /* Content Area */
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        /* Maintenance Banner Component */
+        .maintenance-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Switch Toggle Button */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input { opacity: 0; width: 0; height: 0; }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #cbd5e1;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px; width: 26px;
+            left: 4px; bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider { background-color: var(--danger); }
+        input:checked + .slider:before { transform: translateX(26px); }
+
+        /* Log Terminal View */
+        .log-terminal {
+            background: var(--admin-dark);
+            color: #38bdf8;
+            border-radius: 15px;
+            padding: 25px;
+            font-family: 'Courier New', Courier, monospace;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .log-title {
+            color: #94a3b8;
+            font-family: 'Poppins', sans-serif;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .log-item {
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        .log-time { color: #64748b; margin-right: 10px; }
+        .log-status { font-weight: bold; }
+        .log-status.info { color: #34d399; }
+        .log-status.warning { color: #fbbf24; }
+        .log-status.critical { color: #f87171; }
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR ADMIN -->
+    <div class="sidebar">
+        <div>
+            <div class="logo-area">
+                <i class='bx bx-shield-quarter' style="color: var(--primary);"></i>
+                <span>Admin Panel</span>
+            </div>
+            <ul class="menu-links">
+                <li><a href="#" class="active"><i class='bx bx-terminal'></i> System Logs</a></li>
+                <li><a href="#"><i class='bx bx-cog'></i> Maintenance Mode</a></li>
+                <li><a href="#"><i class='bx bx-group'></i> Manajemen User</a></li>
+                <li><a href="#"><i class='bx bx-data'></i> Backup Database</a></li>
+            </ul>
+        </div>
+        <div>
+            <ul class="menu-links">
+                <li><a href="#" class="logout-btn"><i class='bx bx-log-out'></i> Keluar</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <div class="top-nav">
+            <h2>Sistem Kontrol & Log Aplikasi</h2>
+            <span style="background: white; padding: 8px 15px; border-radius: 8px; font-size: 14px; font-weight: 500; border: 1px solid #e2e8f0;">
+                <i class='bx bx-server' style="color: var(--success); margin-right: 5px;"></i> Server Status: Healthy
+            </span>
+        </div>
+
+        <!-- MAINTENANCE CARD -->
+        <div class="maintenance-card">
+            <div>
+                <h3 style="font-size: 18px; margin-bottom: 5px;">Mode Perbaikan (Maintenance Mode)</h3>
+                <p style="color: #64748b; font-size: 14px;">Aktifkan mode ini untuk mengunci sementara akses mahasiswa selama pemeliharaan basis data.</p>
+            </div>
+            <label class="switch">
+                <input type="checkbox">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <!-- LOG TERMINAL VIEW -->
+        <div class="log-terminal">
+            <div class="log-title">
+                <span><i class='bx bx-code-block'></i> Live Activity Logs</span>
+                <span style="font-size: 12px; background: rgba(255,255,255,0.1); padding: 3px 8px; border-radius: 5px; color: #fff;">Real-time</span>
+            </div>
+            
+            <div class="log-item">
+                <span class="log-time">[15:34:12]</span>
+                <span class="log-status info">[INFO]</span> User ANDIKA RAMADHANA berhasil mengambil KRS Semester Ganjil.
+            </div>
+            <div class="log-item">
+                <span class="log-time">[15:35:01]</span>
+                <span class="log-status info">[INFO]</span> Admin_Siti melakukan backup database ke server sekunder.
+            </div>
+            <div class="log-item">
+                <span class="log-time">[15:36:45]</span>
+                <span class="log-status warning">[WARN]</span> Latency database terdeteksi tinggi (450ms) pada query KHS.
+            </div>
+            <div class="log-item">
+                <span class="log-time">[15:37:20]</span>
+                <span class="log-status critical">[CRIT]</span> Gagal melakukan handshake SSL ke API eksternal Bank Pembayaran UKT. Menolak request sementara.
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
